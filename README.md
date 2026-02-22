@@ -2,20 +2,21 @@
 
 Protect your AI agent from **prompt injection**, **PII leaks**, and **RAG poisoning** by scanning MCP tool responses before they reach the LLM.
 
-## What it does
+## Why you need this
 
-When an AI agent (Cursor, GitHub Copilot, Claude) fetches data from the web, files, or APIs, that content can contain hidden instructions designed to hijack the agent. AgentGuard scans tool responses and blocks attacks before they cause damage.
+AI agents that browse the web, read files, or query APIs are vulnerable to **prompt injection** — hidden instructions embedded in external content that silently hijack the agent's behavior. A malicious web page can instruct your agent to exfiltrate data, ignore your instructions, or take destructive actions.
 
-**Included tools:**
-- `scan_tool_response` — scan any MCP tool output for prompt injection and PII
-- `scan_chunks` — scan RAG document chunks for poisoning before building the LLM context
+AgentGuard scans every tool response before it reaches the LLM and blocks attacks in real time, with sub-15ms latency.
 
-**Included rules:**
-- Always-on security guidelines for building safe AI agents (`rules/ai-agent-security.mdc`)
-- Copilot instructions that tell the agent to scan tool responses automatically (`.github/copilot-instructions.md`)
+**What's included:**
 
-**Included skill:**
-- `/scan-agent` — audit your agent code for security vulnerabilities
+| Component | What it does |
+|-----------|-------------|
+| `scan_tool_response` tool | Scans web, file, and API responses for prompt injection and PII leaks |
+| `scan_chunks` tool | Filters poisoned RAG document chunks before they enter your prompt |
+| Security rules | Always-on guidelines instructing the agent to scan before using external content |
+| Copilot instructions | `.github/copilot-instructions.md` — tells GitHub Copilot to scan automatically |
+| `/scan-agent` skill | Audits your agent code for security vulnerabilities on demand |
 
 ## What to realistically expect
 
@@ -25,8 +26,9 @@ However, this is guidance-based — not a hard firewall. **For guaranteed enforc
 
 ## Setup
 
-1. Create a free account and get your **Shield ID** at [botguard.dev](https://botguard.dev)
-2. Install this plugin from the Cursor Marketplace, or add to `.vscode/mcp.json` / `mcp.json`:
+1. Create a free account at [botguard.dev](https://botguard.dev)
+2. Go to **Dashboard → Shields** and copy your Shield ID — it looks like `sh_xxxxxxxxxxxxxxxx`
+3. Install this plugin from the Cursor Marketplace, or add manually to `.vscode/mcp.json` / `mcp.json`:
 
 ```json
 {
@@ -35,14 +37,16 @@ However, this is guidance-based — not a hard firewall. **For guaranteed enforc
       "command": "npx",
       "args": ["-y", "agentguard-mcp"],
       "env": {
-        "AGENTGUARD_SHIELD_ID": "sh_your_shield_id_here"
+        "AGENTGUARD_SHIELD_ID": "sh_xxxxxxxxxxxxxxxx"
       }
     }
   }
 }
 ```
 
-3. Restart Cursor / VS Code
+4. Restart Cursor / VS Code
+
+> The Shield ID is just the `sh_...` part — not the full URL.
 
 ## Works with
 
