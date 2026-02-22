@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "agentguard": {
+      "command": "npx",
+      "args": ["-y", "agentguard-mcp"],
+      "env": {
+        "AGENTGUARD_SHIELD_ID": "${AGENTGUARD_SHIELD_ID}"
+      }
+    }
+  }
+}

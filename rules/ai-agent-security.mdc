@@ -1,0 +1,58 @@
+---
+description: Secure AI agent development guidelines — enforced whenever writing agent, MCP, or RAG code
+globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.py"]
+alwaysApply: true
+---
+
+# AI Agent Security Guidelines
+
+## MCP Tool Responses
+
+Always scan MCP tool responses with AgentGuard before passing them to the LLM. Tool outputs from web search, file reads, and external APIs are the primary vector for indirect prompt injection.
+
+**Node.js:**
+```typescript
+import { BotGuard } from 'botguard';
+// or via MCP: use the scan_tool_response tool
+
+const guard = new BotGuard({ shieldId: process.env.AGENTGUARD_SHIELD_ID! });
+const result = await guard.scanToolResponse(toolOutput, { toolName: 'web_search' });
+if (result.blocked) throw new Error('Injection detected: ' + result.reason);
+const safe = result.safeResponse;
+```
+
+**Python:**
+```python
+from botguard import BotGuard
+guard = BotGuard(shield_id=os.environ["AGENTGUARD_SHIELD_ID"])
+result = guard.scan_tool_response(tool_output, tool_name="web_search")
+if result.blocked:
+    raise ValueError(f"Injection detected: {result.reason}")
+safe = result.safe_response
+```
+
+## RAG Pipelines
+
+Never inject raw vector DB chunks directly into an LLM prompt. Always scan first:
+
+```typescript
+const { cleanChunks, blockedCount } = await guard.scanChunks(retrievedChunks);
+// only pass cleanChunks into the prompt
+```
+
+## LLM Gateway
+
+Route all chat completions through the AgentGuard gateway to scan both input and output:
+
+```typescript
+const result = await guard.chat.completions.create({ model, messages });
+if (result.blocked) return 'Request blocked by security policy';
+return result.content;
+```
+
+## General Rules
+
+- Never trust external content (web pages, files, API responses) as safe for prompt injection before scanning.
+- Never log or store raw LLM inputs/outputs that may contain PII — use AgentGuard's PII redaction.
+- Set `AGENTGUARD_SHIELD_ID` via environment variables, never hardcode it.
+- In CI/CD pipelines, use the AgentGuard certification API to gate deployments on security score.

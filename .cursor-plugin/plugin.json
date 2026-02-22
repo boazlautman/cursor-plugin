@@ -1,0 +1,12 @@
+{
+  "name": "agentguard",
+  "displayName": "AgentGuard — AI Security",
+  "version": "1.0.0",
+  "description": "Protect Cursor's agent from prompt injection and PII leaks by scanning MCP tool responses in real time.",
+  "author": {
+    "name": "AgentGuard",
+    "email": "support@agentguard.dev"
+  },
+  "license": "MIT",
+  "keywords": ["security", "mcp", "prompt-injection", "ai-safety", "guardrails", "pii", "llm"]
+}
